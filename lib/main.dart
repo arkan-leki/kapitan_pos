@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Import for Hive initialization and Flutter integration
 import 'package:path_provider/path_provider.dart'; // Import for getting the application directory
 import 'package:flutter_localization/flutter_localization.dart';
-import 'package:localization/localization.dart';
 
 // Import your custom model classes
 import 'package:kapitan_pos/models/menu_item.dart';
