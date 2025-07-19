@@ -20,10 +20,14 @@ class POSScreen extends StatefulWidget {
 
 class _POSScreenState extends State<POSScreen> {
   // --- State Variables ---
-  final List<OrderItem> _currentOrder = []; // List of items in the current order
-  OrderType _orderType = OrderType.onsite; // Type of order (On-site or Delivery)
-  final TextEditingController _customerNameController = TextEditingController(); // Controller for customer name input
-  final TextEditingController _deliveryAddressController = TextEditingController(); // Controller for delivery address input
+  final List<OrderItem> _currentOrder =
+      []; // List of items in the current order
+  OrderType _orderType =
+      OrderType.onsite; // Type of order (On-site or Delivery)
+  final TextEditingController _customerNameController =
+      TextEditingController(); // Controller for customer name input
+  final TextEditingController _deliveryAddressController =
+      TextEditingController(); // Controller for delivery address input
 
   late Box<MenuItem> _menuItemsBox; // Hive box for menu items
   late Box<Order> _ordersBox; // Hive box for orders
@@ -118,7 +122,7 @@ class _POSScreenState extends State<POSScreen> {
   void _addToOrder(MenuItem item) {
     setState(() {
       final existingItemIndex = _currentOrder.indexWhere(
-            (orderItem) => orderItem.menuItem.id == item.id,
+        (orderItem) => orderItem.menuItem.id == item.id,
       );
       if (existingItemIndex >= 0) {
         // If item exists, increment quantity
@@ -191,83 +195,86 @@ class _POSScreenState extends State<POSScreen> {
   void _printOrder(Order order) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('پسوڵەی داواکاری'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('جۆری داواکاری: ${order.orderType.name.toUpperCase()}'),
-              if (order.customerName.isNotEmpty)
-                Text('کڕیار: ${order.customerName}'),
-              if (order.deliveryAddress.isNotEmpty)
-                Text('ناونیشان: ${order.deliveryAddress}'),
-              const SizedBox(height: 16),
-              const Text(
-                'کالاکان:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              ...order.items.map(
+      builder:
+          (context) => AlertDialog(
+            title: const Text('پسوڵەی داواکاری'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('جۆری داواکاری: ${order.orderType.name.toUpperCase()}'),
+                  if (order.customerName.isNotEmpty)
+                    Text('کڕیار: ${order.customerName}'),
+                  if (order.deliveryAddress.isNotEmpty)
+                    Text('ناونیشان: ${order.deliveryAddress}'),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'کالاکان:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  ...order.items.map(
                     (item) => Text(
-                  '${item.menuItem.name} x${item.quantity} - ${(item.menuItem.price * item.quantity).toStringAsFixed(0)}',
-                ),
+                      '${item.menuItem.name} x${item.quantity} - ${(item.menuItem.price * item.quantity).toStringAsFixed(0)}',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'کۆ: ${order.total.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                'کۆ: ${order.total.toStringAsFixed(0)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('باشە'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  var printReceipt = <Map<String, dynamic>>[];
+                  printReceipt.add({
+                    'id': order.key?.toString() ?? 'N/A',
+                    'order_title': '#${order.key?.toString() ?? 'N/A'}',
+                    'order_type': _mapOrderTypeToEnglish(order.orderType),
+                    'customer_name': order.customerName,
+                    'delivery_address': order.deliveryAddress,
+                    'date':
+                        '${order.timestamp.day}/${order.timestamp.month}/${order.timestamp.year}',
+                    'time':
+                        '${order.timestamp.hour}:${order.timestamp.minute.toString().padLeft(2, '0')}',
+                    'total': order.total.toStringAsFixed(0),
+                    'items':
+                        order.items.map((item) {
+                          return {
+                            'name': item.menuItem.name,
+                            'quantity': item.quantity,
+                            'price': item.menuItem.price.toStringAsFixed(0),
+                            'subtotal': (item.menuItem.price * item.quantity)
+                                .toStringAsFixed(0),
+                          };
+                        }).toList(),
+                  });
+
+                  if (printReceipt.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => BluetoothPrintPage(printData: printReceipt),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('چاپ'),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('باشە'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              var printReceipt = <Map<String, dynamic>>[];
-              printReceipt.add({
-                'id': order.key?.toString() ?? 'N/A',
-                'order_title': '#${order.key?.toString() ?? 'N/A'}',
-                'order_type': _mapOrderTypeToEnglish(order.orderType),
-                'customer_name': order.customerName,
-                'delivery_address': order.deliveryAddress,
-                'date':
-                '${order.timestamp.day}/${order.timestamp.month}/${order.timestamp.year}',
-                'time':
-                '${order.timestamp.hour}:${order.timestamp.minute.toString().padLeft(2, '0')}',
-                'total': order.total.toStringAsFixed(0),
-                'items': order.items.map((item) {
-                  return {
-                    'name': item.menuItem.name,
-                    'quantity': item.quantity,
-                    'price': item.menuItem.price.toStringAsFixed(0),
-                    'subtotal': (item.menuItem.price * item.quantity)
-                        .toStringAsFixed(0),
-                  };
-                }).toList(),
-              });
-
-              if (printReceipt.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BluetoothPrintPage(printData: printReceipt),
-                  ),
-                );
-              }
-            },
-            child: const Text('چاپ'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -321,43 +328,64 @@ class _POSScreenState extends State<POSScreen> {
     };
 
     return Scaffold(
-      body: isTablet
-          ? TabletPOSLayout(
-        // Cast the map values to their specific types
-        currentOrder: commonProps['currentOrder'] as List<OrderItem>,
-        orderType: commonProps['orderType'] as OrderType,
-        customerNameController: commonProps['customerNameController'] as TextEditingController,
-        deliveryAddressController: commonProps['deliveryAddressController'] as TextEditingController,
-        menuItemsBox: commonProps['menuItemsBox'] as Box<MenuItem>,
-        categories: commonProps['categories'] as List<String>,
-        selectedCategory: commonProps['selectedCategory'] as String?,
-        onCategorySelected: commonProps['onCategorySelected'] as Function(String?),
-        onAddToOrder: commonProps['onAddToOrder'] as Function(MenuItem),
-        onRemoveFromOrder: commonProps['onRemoveFromOrder'] as Function(int),
-        onClearOrder: commonProps['onClearOrder'] as VoidCallback,
-        onSubmitOrder: commonProps['onSubmitOrder'] as VoidCallback,
-        showSnackBar: commonProps['showSnackBar'] as Function(String, {bool isError}),
-        mapOrderTypeToEnglish: commonProps['mapOrderTypeToEnglish'] as Function(OrderType),
-        onOrderTypeChanged: commonProps['onOrderTypeChanged'] as Function(OrderType),
-      )
-          : MobilePOSLayout(
-        // Cast the map values to their specific types
-        currentOrder: commonProps['currentOrder'] as List<OrderItem>,
-        orderType: commonProps['orderType'] as OrderType,
-        customerNameController: commonProps['customerNameController'] as TextEditingController,
-        deliveryAddressController: commonProps['deliveryAddressController'] as TextEditingController,
-        menuItemsBox: commonProps['menuItemsBox'] as Box<MenuItem>,
-        categories: commonProps['categories'] as List<String>,
-        selectedCategory: commonProps['selectedCategory'] as String?,
-        onCategorySelected: commonProps['onCategorySelected'] as Function(String?),
-        onAddToOrder: commonProps['onAddToOrder'] as Function(MenuItem),
-        onRemoveFromOrder: commonProps['onRemoveFromOrder'] as Function(int),
-        onClearOrder: commonProps['onClearOrder'] as VoidCallback,
-        onSubmitOrder: commonProps['onSubmitOrder'] as VoidCallback,
-        showSnackBar: commonProps['showSnackBar'] as Function(String, {bool isError}),
-        mapOrderTypeToEnglish: commonProps['mapOrderTypeToEnglish'] as Function(OrderType),
-        onOrderTypeChanged: commonProps['onOrderTypeChanged'] as Function(OrderType),
-      ),
+      body:
+          isTablet
+              ? TabletPOSLayout(
+                // Cast the map values to their specific types
+                currentOrder: commonProps['currentOrder'] as List<OrderItem>,
+                orderType: commonProps['orderType'] as OrderType,
+                customerNameController:
+                    commonProps['customerNameController']
+                        as TextEditingController,
+                deliveryAddressController:
+                    commonProps['deliveryAddressController']
+                        as TextEditingController,
+                menuItemsBox: commonProps['menuItemsBox'] as Box<MenuItem>,
+                categories: commonProps['categories'] as List<String>,
+                selectedCategory: commonProps['selectedCategory'] as String?,
+                onCategorySelected:
+                    commonProps['onCategorySelected'] as Function(String?),
+                onAddToOrder: commonProps['onAddToOrder'] as Function(MenuItem),
+                onRemoveFromOrder:
+                    commonProps['onRemoveFromOrder'] as Function(int),
+                onClearOrder: commonProps['onClearOrder'] as VoidCallback,
+                onSubmitOrder: commonProps['onSubmitOrder'] as VoidCallback,
+                showSnackBar:
+                    commonProps['showSnackBar']
+                        as Function(String, {bool isError}),
+                mapOrderTypeToEnglish:
+                    commonProps['mapOrderTypeToEnglish'] as Function(OrderType),
+                onOrderTypeChanged:
+                    commonProps['onOrderTypeChanged'] as Function(OrderType),
+              )
+              : MobilePOSLayout(
+                // Cast the map values to their specific types
+                currentOrder: commonProps['currentOrder'] as List<OrderItem>,
+                orderType: commonProps['orderType'] as OrderType,
+                customerNameController:
+                    commonProps['customerNameController']
+                        as TextEditingController,
+                deliveryAddressController:
+                    commonProps['deliveryAddressController']
+                        as TextEditingController,
+                menuItemsBox: commonProps['menuItemsBox'] as Box<MenuItem>,
+                categories: commonProps['categories'] as List<String>,
+                selectedCategory: commonProps['selectedCategory'] as String?,
+                onCategorySelected:
+                    commonProps['onCategorySelected'] as Function(String?),
+                onAddToOrder: commonProps['onAddToOrder'] as Function(MenuItem),
+                onRemoveFromOrder:
+                    commonProps['onRemoveFromOrder'] as Function(int),
+                onClearOrder: commonProps['onClearOrder'] as VoidCallback,
+                onSubmitOrder: commonProps['onSubmitOrder'] as VoidCallback,
+                showSnackBar:
+                    commonProps['showSnackBar']
+                        as Function(String, {bool isError}),
+                mapOrderTypeToEnglish:
+                    commonProps['mapOrderTypeToEnglish'] as Function(OrderType),
+                onOrderTypeChanged:
+                    commonProps['onOrderTypeChanged'] as Function(OrderType),
+              ),
     );
   }
 }

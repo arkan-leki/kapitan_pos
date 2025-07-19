@@ -22,7 +22,8 @@ class TabletPOSLayout extends StatelessWidget {
   final VoidCallback onSubmitOrder;
   final Function(String, {bool isError}) showSnackBar;
   final Function(OrderType) onOrderTypeChanged;
-  final Function(OrderType) mapOrderTypeToEnglish; // Passed for print dialog logic
+  final Function(OrderType)
+  mapOrderTypeToEnglish; // Passed for print dialog logic
 
   const TabletPOSLayout({
     super.key,
@@ -58,7 +59,8 @@ class TabletPOSLayout extends StatelessWidget {
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
                   final category = categories[index];
-                  final isSelected = selectedCategory == category ||
+                  final isSelected =
+                      selectedCategory == category ||
                       (selectedCategory == null && category == 'هەمووی');
 
                   return Padding(
@@ -71,7 +73,9 @@ class TabletPOSLayout extends StatelessWidget {
                       selected: isSelected,
                       onSelected: (selected) {
                         if (selected) {
-                          onCategorySelected((category == 'هەمووی') ? null : category);
+                          onCategorySelected(
+                            (category == 'هەمووی') ? null : category,
+                          );
                         } else {
                           if (category != 'هەمووی') {
                             onCategorySelected(null);
@@ -98,13 +102,12 @@ class TabletPOSLayout extends StatelessWidget {
               valueListenable: menuItemsBox.listenable(),
               builder: (context, Box<MenuItem> box, _) {
                 final allMenuItems = box.values.toList();
-                final filteredMenuItems = selectedCategory == null
-                    ? allMenuItems
-                    : allMenuItems
-                    .where(
-                      (item) => item.category == selectedCategory,
-                )
-                    .toList();
+                final filteredMenuItems =
+                    selectedCategory == null
+                        ? allMenuItems
+                        : allMenuItems
+                            .where((item) => item.category == selectedCategory)
+                            .toList();
 
                 if (filteredMenuItems.isEmpty) {
                   return Center(
@@ -113,16 +116,20 @@ class TabletPOSLayout extends StatelessWidget {
                           ? 'هیچ شتێکی مینیو بەردەست نییە. لە شاشەی بەڕێوەبردنی مینیوەوە هەندێکیان زیاد بکە!'
                           : 'هیچ شتێک لە کەتێگۆری "${selectedCategory!}" بەردەست نییە.',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 18), // Larger font for tablet
+                      style: const TextStyle(
+                        fontSize: 18,
+                      ), // Larger font for tablet
                     ),
                   );
                 }
 
                 return GridView.builder(
                   padding: const EdgeInsets.all(12), // Increased padding
-                  gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: MediaQuery.of(context).size.width < 900 ? 3 : 4, // Adaptive for tablet landscape
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount:
+                        MediaQuery.of(context).size.width < 900
+                            ? 4
+                            : 5, // Adaptive for tablet landscape
                     childAspectRatio: 0.8,
                     crossAxisSpacing: 12, // Increased spacing
                     mainAxisSpacing: 12,
@@ -133,7 +140,9 @@ class TabletPOSLayout extends StatelessWidget {
                     return Card(
                       elevation: 6, // Slightly higher elevation
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16), // More rounded corners
+                        borderRadius: BorderRadius.circular(
+                          16,
+                        ), // More rounded corners
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
@@ -147,46 +156,83 @@ class TabletPOSLayout extends StatelessWidget {
                               child: Stack(
                                 fit: StackFit.expand,
                                 children: [
-                                  (item.imageUrl != null && item.imageUrl!.isNotEmpty)
+                                  (item.imageUrl != null &&
+                                          item.imageUrl!.isNotEmpty)
                                       ? (item.imageUrl!.startsWith('http'))
-                                      ? Image.network(
-                                    item.imageUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      debugPrint('Error loading network image for ${item.name}: $error');
-                                      return const Center(
-                                        child: Icon(Icons.broken_image, size: 70, color: Colors.grey),
-                                      );
-                                    },
-                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress.expectedTotalBytes != null
-                                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  )
-                                      : Image.file(
-                                    File(item.imageUrl!),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      debugPrint('Error loading local image for ${item.name}: $error');
-                                      return const Center(
-                                        child: Icon(Icons.broken_image, size: 70, color: Colors.grey),
-                                      );
-                                    },
-                                  )
+                                          ? Image.network(
+                                            item.imageUrl!,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              debugPrint(
+                                                'Error loading network image for ${item.name}: $error',
+                                              );
+                                              return const Center(
+                                                child: Icon(
+                                                  Icons.broken_image,
+                                                  size: 70,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
+                                            loadingBuilder: (
+                                              BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent? loadingProgress,
+                                            ) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  value:
+                                                      loadingProgress
+                                                                  .expectedTotalBytes !=
+                                                              null
+                                                          ? loadingProgress
+                                                                  .cumulativeBytesLoaded /
+                                                              loadingProgress
+                                                                  .expectedTotalBytes!
+                                                          : null,
+                                                ),
+                                              );
+                                            },
+                                          )
+                                          : Image.file(
+                                            File(item.imageUrl!),
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              debugPrint(
+                                                'Error loading local image for ${item.name}: $error',
+                                              );
+                                              return const Center(
+                                                child: Icon(
+                                                  Icons.broken_image,
+                                                  size: 70,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
+                                          )
                                       : const Center(
-                                    child: Icon(Icons.fastfood, size: 70, color: Colors.grey), // Larger icon
-                                  ),
+                                        child: Icon(
+                                          Icons.fastfood,
+                                          size: 70,
+                                          color: Colors.grey,
+                                        ), // Larger icon
+                                      ),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0, // Increased vertical padding
+                                        vertical:
+                                            8.0, // Increased vertical padding
                                         horizontal: 12.0,
                                       ),
                                       decoration: BoxDecoration(
@@ -198,9 +244,10 @@ class TabletPOSLayout extends StatelessWidget {
                                             Colors.black.withOpacity(0.7),
                                           ],
                                         ),
-                                        borderRadius: const BorderRadius.vertical(
-                                          bottom: Radius.circular(16),
-                                        ),
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                              bottom: Radius.circular(16),
+                                            ),
                                       ),
                                       child: Text(
                                         item.name,
@@ -255,15 +302,17 @@ class TabletPOSLayout extends StatelessWidget {
   Widget _buildOrderDetails(BuildContext context) {
     final total = currentOrder.fold(
       0.0,
-          (sum, item) => sum + (item.menuItem.price * item.quantity),
+      (sum, item) => sum + (item.menuItem.price * item.quantity),
     );
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.grey.shade200,
         border: Border(
-          left: BorderSide( // Border on left for landscape layout
+          left: BorderSide(
+            // Border on left for landscape layout
             color: Theme.of(context).dividerColor,
-            width: 1,
+            width: 2,
           ),
         ),
       ),
@@ -273,14 +322,18 @@ class TabletPOSLayout extends StatelessWidget {
             padding: const EdgeInsets.all(20.0), // Increased padding
             child: Text(
               'داواکاری ئێستا',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 28), // Larger title
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 18), // Larger title
             ),
           ),
           if (currentOrder.isNotEmpty) ...[
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0, vertical: 12.0), // Increased padding
+                horizontal: 20.0,
+                vertical: 12.0,
+              ), // Increased padding
               child: Row(
                 children: [
                   Expanded(
@@ -322,66 +375,97 @@ class TabletPOSLayout extends StatelessWidget {
             ),
           ],
           Expanded(
-            child: currentOrder.isEmpty
-                ? const Center(
-              child: Text(
-                'هیچ کاڵایەک زیاد نەکراوە',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
-                : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 12), // Increased padding
-              itemCount: currentOrder.length,
-              itemBuilder: (context, index) {
-                final item = currentOrder[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0), // Increased vertical padding
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(item.menuItem.name, style: const TextStyle(fontSize: 18)), // Larger font
+            child:
+                currentOrder.isEmpty
+                    ? const Center(
+                      child: Text(
+                        'هیچ کاڵایەک زیاد نەکراوە',
+                        style: TextStyle(fontSize: 18),
                       ),
-                      SizedBox(
-                        width: 100,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove, size: 24), // Smaller icon
-                              onPressed: () => onRemoveFromOrder(index),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40), // Adjusted min touch target
-                            ),
-                            Text(item.quantity.toString(), style: const TextStyle(fontSize: 18)), // Larger font
-                            IconButton(
-                              icon: const Icon(Icons.add, size: 24), // Smaller icon
-                              onPressed: () => onAddToOrder(item.menuItem),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(minWidth: 40, minHeight: 40), // Adjusted min touch target
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: Text(
-                          (item.menuItem.price * item.quantity).toStringAsFixed(0),
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(fontSize: 18), // Larger font
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => const Divider(height: 1),
-            ),
+                    )
+                    : ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                      ), // Increased padding
+                      itemCount: currentOrder.length,
+                      itemBuilder: (context, index) {
+                        final item = currentOrder[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 6.0,
+                          ), // Increased vertical padding
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.menuItem.name,
+                                  style: const TextStyle(fontSize: 18),
+                                ), // Larger font
+                              ),
+                              SizedBox(
+                                width: 100,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.remove,
+                                        size: 24,
+                                      ), // Smaller icon
+                                      onPressed: () => onRemoveFromOrder(index),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(
+                                        minWidth: 40,
+                                        minHeight: 40,
+                                      ), // Adjusted min touch target
+                                    ),
+                                    Text(
+                                      item.quantity.toString(),
+                                      style: const TextStyle(fontSize: 18),
+                                    ), // Larger font
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.add,
+                                        size: 24,
+                                      ), // Smaller icon
+                                      onPressed:
+                                          () => onAddToOrder(item.menuItem),
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(
+                                        minWidth: 40,
+                                        minHeight: 40,
+                                      ), // Adjusted min touch target
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 100,
+                                child: Text(
+                                  (item.menuItem.price * item.quantity)
+                                      .toStringAsFixed(0),
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ), // Larger font
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder:
+                          (context, index) => const Divider(height: 1),
+                    ),
           ),
           if (currentOrder.isNotEmpty) ...[
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0, vertical: 16.0), // Increased padding
+                horizontal: 20.0,
+                vertical: 16.0,
+              ), // Increased padding
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -389,14 +473,14 @@ class TabletPOSLayout extends StatelessWidget {
                     'کۆ:',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 26, // Larger font
+                      fontSize: 18, // Larger font
                     ),
                   ),
                   Text(
                     total.toStringAsFixed(0),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 26, // Larger font
+                      fontSize: 18, // Larger font
                       color: Colors.green,
                     ),
                   ),
@@ -404,7 +488,10 @@ class TabletPOSLayout extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 10.0,
+                horizontal: 20.0,
+              ),
               child: Row(
                 children: [
                   const Text(
@@ -428,13 +515,14 @@ class TabletPOSLayout extends StatelessWidget {
                           },
                           selectedColor: Colors.blueAccent,
                           labelStyle: TextStyle(
-                            color: orderType == OrderType.onsite
-                                ? Colors.white
-                                : Colors.black,
+                            color:
+                                orderType == OrderType.onsite
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
                           labelPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                            horizontal: 18,
+                            vertical: 8,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -451,13 +539,14 @@ class TabletPOSLayout extends StatelessWidget {
                           },
                           selectedColor: Colors.orange,
                           labelStyle: TextStyle(
-                            color: orderType == OrderType.delivery
-                                ? Colors.white
-                                : Colors.black,
+                            color:
+                                orderType == OrderType.delivery
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
                           labelPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                            horizontal: 18,
+                            vertical: 8,
                           ),
                         ),
                       ],
@@ -480,9 +569,12 @@ class TabletPOSLayout extends StatelessWidget {
                     labelText: 'ناوی کڕیار',
                     border: OutlineInputBorder(),
                     hintText: 'ناوی کڕیار سەرپشک',
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), // Larger input field
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 16.0,
+                    ), // Larger input field
                   ),
-                  style: const TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
               Padding(
@@ -496,9 +588,12 @@ class TabletPOSLayout extends StatelessWidget {
                     labelText: 'ناونیشانی گەیاندن *',
                     border: OutlineInputBorder(),
                     hintText: 'ناونیشان داخلبکە',
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0), // Larger input field
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 16.0,
+                    ), // Larger input field
                   ),
-                  style: const TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
               const SizedBox(height: 12),
@@ -510,31 +605,49 @@ class TabletPOSLayout extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.delete_sweep, size: 24), // Smaller icon
+                      icon: const Icon(
+                        Icons.delete_sweep,
+                        size: 24,
+                      ), // Smaller icon
                       onPressed: onClearOrder,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red.shade700,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 16), // Adjusted vertical padding
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), // More rounded
+                          vertical: 16,
+                        ), // Adjusted vertical padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ), // More rounded
                       ),
-                      label: const Text('سڕینەوەی هەموو', style: TextStyle(fontSize: 18)), // Larger font
+                      label: const Text(
+                        'سڕینەوەی هەموو',
+                        style: TextStyle(fontSize: 18),
+                      ), // Larger font
                     ),
                   ),
                   const SizedBox(width: 20), // Increased spacing
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle_outline, size: 24), // Smaller icon
+                      icon: const Icon(
+                        Icons.check_circle_outline,
+                        size: 24,
+                      ), // Smaller icon
                       onPressed: onSubmitOrder,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green.shade700,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 16), // Adjusted vertical padding
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), // More rounded
+                          vertical: 16,
+                        ), // Adjusted vertical padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ), // More rounded
                       ),
-                      label: const Text('ناردنی داواکاری', style: TextStyle(fontSize: 18)), // Larger font
+                      label: const Text(
+                        'ناردنی داواکاری',
+                        style: TextStyle(fontSize: 18),
+                      ), // Larger font
                     ),
                   ),
                 ],
@@ -560,14 +673,8 @@ class TabletPOSLayout extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          flex: productsFlex,
-          child: _buildProductsGrid(context),
-        ),
-        Expanded(
-          flex: orderDetailsFlex,
-          child: _buildOrderDetails(context),
-        ),
+        Expanded(flex: productsFlex, child: _buildProductsGrid(context)),
+        Expanded(flex: orderDetailsFlex, child: _buildOrderDetails(context)),
       ],
     );
   }
