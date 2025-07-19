@@ -272,8 +272,8 @@ class CommandTool {
   }
 
   static Future<Uint8List?> tscFoodReceiptCmd(
-      List<Map<String, dynamic>> printData,
-      ) async {
+    List<Map<String, dynamic>> printData,
+  ) async {
     await tscCommand.cleanCommand();
 
     for (var order in printData) {
@@ -298,31 +298,50 @@ class CommandTool {
       );
 
       // Order info with increased spacing
-      await tscCommand.text(content: 'Order: ${order['order_title']}', x: 10, y: 100);
-      await tscCommand.text(content: 'Type: ${order['order_type']}', x: 10, y: 140);
+      await tscCommand.text(
+        content: 'Order: ${order['order_title']}',
+        x: 10,
+        y: 100,
+      );
+      await tscCommand.text(
+        content: 'Type: ${order['order_type']}',
+        x: 10,
+        y: 140,
+      );
       await tscCommand.text(content: 'Date: ${order['date']}', x: 10, y: 180);
+
+      await tscCommand.text(
+        content: 'Phone: ${order['customer_name']}',
+        x: 10,
+        y: 220,
+      );
+      await tscCommand.text(
+        content: 'Address: ${order['delivery_address']}',
+        x: 10,
+        y: 250,
+      );
 
       // Divider with more space
       await tscCommand.text(
         content: '-------------------------------',
         x: 10,
-        y: 220,
+        y: 300,
       );
 
       // Column headers with space
-      await tscCommand.text(content: 'ITEM', x: 10, y: 250);
-      await tscCommand.text(content: 'QTY', x: 200, y: 250);
-      await tscCommand.text(content: 'PRICE', x: 300, y: 250);
+      await tscCommand.text(content: 'ITEM', x: 10, y: 350);
+      await tscCommand.text(content: 'QTY', x: 200, y: 350);
+      await tscCommand.text(content: 'PRICE', x: 300, y: 350);
 
       // Divider with space
       await tscCommand.text(
         content: '-------------------------------',
         x: 10,
-        y: 280,
+        y: 380,
       );
 
       // Items list with more spacing
-      int yPos = 330;
+      int yPos = 400;
       for (var item in order['items']) {
         String itemName = item['name'].toString();
         if (itemName.length > 20) {
@@ -330,8 +349,16 @@ class CommandTool {
         }
 
         await tscCommand.text(content: itemName, x: 10, y: yPos);
-        await tscCommand.text(content: item['quantity'].toString(), x: 200, y: yPos);
-        await tscCommand.text(content: item['price'].toString(), x: 280, y: yPos);
+        await tscCommand.text(
+          content: item['quantity'].toString(),
+          x: 200,
+          y: yPos,
+        );
+        await tscCommand.text(
+          content: item['price'].toString(),
+          x: 280,
+          y: yPos,
+        );
 
         yPos += 30; // More space between items
       }
@@ -345,7 +372,11 @@ class CommandTool {
 
       yPos += 40;
       await tscCommand.text(content: 'TOTAL:', x: 100, y: yPos);
-      await tscCommand.text(content: order['total'].toString(), x: 200, y: yPos);
+      await tscCommand.text(
+        content: order['total'].toString(),
+        x: 200,
+        y: yPos,
+      );
 
       // Footer with maximum space
       yPos += 50;
@@ -356,11 +387,7 @@ class CommandTool {
       );
 
       yPos += 40;
-      await tscCommand.text(
-        content: 'Visit us again soon',
-        x: 40,
-        y: yPos,
-      );
+      await tscCommand.text(content: 'Visit us again soon', x: 40, y: yPos);
 
       await tscCommand.print(1);
     }
