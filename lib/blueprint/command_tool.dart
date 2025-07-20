@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
+import 'package:hive/hive.dart';
+import 'package:kapitan_pos/screens/home_screen.dart';
 
 /// CommandTool
 class CommandTool {
@@ -222,9 +224,11 @@ class CommandTool {
     await escCommand.cleanCommand();
     await escCommand.print(feedLines: 3);
 
+    var name = getAppName();
+
     for (var order in printData) {
       await escCommand.text(
-        content: '--- Fancy Pizza Order ---',
+        content: '--- $name Order ---',
         alignment: Alignment.center,
         style: EscTextStyle.bold,
       );
@@ -271,10 +275,16 @@ class CommandTool {
     return await escCommand.getCommand();
   }
 
+  static String getAppName() {
+    final appSettingsBox = Hive.box('appSettings');
+    return appSettingsBox.get('appName', defaultValue: 'KAPITAN POS');
+  }
+
   static Future<Uint8List?> tscFoodReceiptCmd(
     List<Map<String, dynamic>> printData,
   ) async {
     await tscCommand.cleanCommand();
+    var name = getAppName();
 
     for (var order in printData) {
       await tscCommand.size(width: 76, height: 130);
@@ -284,7 +294,7 @@ class CommandTool {
 
       // Header with more space
       await tscCommand.text(
-        content: 'FANCY PIZZA ORDER',
+        content: '$name ORDER',
         x: 100,
         y: 15,
         xMulti: 1,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kapitan_pos/screens/printer_setup_screen.dart'; // Import the new printer setup screen
+import 'package:kapitan_pos/screens/app_name_settings_screen.dart'; // Import the new printer setup screen
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -50,7 +51,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
           ),
-          // Tax Settings
+          // App Name Settings
           Card(
             elevation: 3,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -60,25 +61,24 @@ class SettingsScreen extends StatelessWidget {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               title: const Text(
-                'ڕێکخستنەکانی باج', // Tax Settings
+                'ڕێکخستنەکانی ناوی ئەپ', // App Name Settings
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
               ),
               subtitle: const Text(
-                'ڕێژەی باج بۆ بەرهەمەکانت دیاری بکە', // Configure tax rates for your products
+                'ناوی ئەپڵیکەیشنەکەت دیاری بکە', // Set your application's name
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
-              leading: Icon(Icons.calculate, color: Colors.green.shade700, size: 30), // Changed icon for tax
+              leading: Icon(Icons.abc, color: Colors.purple.shade700, size: 30), // Changed icon for app name
               trailing: const Icon(
                 Icons.arrow_forward_ios,
                 size: 18,
                 color: Colors.grey,
               ),
               onTap: () {
-                // You can add a SnackBar to indicate it's not implemented yet
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('ئەم بەشە هێشتا بەردەست نییە.'), // This section is not available yet.
-                    backgroundColor: Colors.orange,
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AppNameSettingsScreen(),
                   ),
                 );
               },

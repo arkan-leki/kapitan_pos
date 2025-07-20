@@ -27,6 +27,7 @@ void main() async {
 
   // Initialize Hive. You must do this once at the start of your application.
   await Hive.initFlutter(appDocumentDir.path);
+  await Hive.openBox('appSettings');
 
   // Register the generated adapters for your custom classes.
   // This tells Hive how to serialize and deserialize your MenuItem, OrderType, OrderItem, and Order objects.

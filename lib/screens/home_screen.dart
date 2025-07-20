@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:kapitan_pos/screens/menu_management.dart';
 import 'package:kapitan_pos/screens/pos_screen.dart';
 import 'package:kapitan_pos/screens/reports_screen.dart';
@@ -9,9 +10,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var name = getAppName();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fancy Pizza'),
+        title: Text(name),
         backgroundColor: Colors.deepOrange, // A vibrant color
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -36,27 +38,33 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+String getAppName() {
+  final appSettingsBox = Hive.box('appSettings');
+  return appSettingsBox.get('appName', defaultValue: 'KAPITAN POS');
+}
+
 // Your NavigationDrawer class remains the same
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var name = getAppName();
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.6, // Set appropriate width
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch, // For better RTL layout
         children: [
           UserAccountsDrawerHeader(
-            accountName: const Text("Fancy Pizza", textDirection: TextDirection.rtl),
-            accountEmail: const Text("arkan.leki@gmail.com", textDirection: TextDirection.rtl),
-            currentAccountPicture: const CircleAvatar(
-              child: Text("FP", style: TextStyle(fontSize: 20)),
+            accountName: Text(name, textDirection: TextDirection.rtl),
+            accountEmail: const Text("KAPITAN POS", textDirection: TextDirection.rtl),
+            currentAccountPicture: CircleAvatar(
+              child: Text(name.substring(0,2), style: TextStyle(fontSize: 20)),
             ),
             decoration: const BoxDecoration(
               color: Colors.deepOrange,
               image: DecorationImage(
-                image: AssetImage('assets/images/drawer_background.png'),
+                image: AssetImage('assets/images/drawer.png'),
                 fit: BoxFit.cover,
               ),
             ),
